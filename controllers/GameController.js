@@ -1,5 +1,5 @@
-import GameModel from '../models/Game.js';
-
+import GameModel from "../models/Game.js";
+import UserModer from "../models/User.js";
 export const getAll = async (req, res) => {
   try {
     const games = await GameModel.find().exec();
@@ -7,18 +7,17 @@ export const getAll = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось загрузить список игр',
+      message: "Не удалось загрузить список игр",
     });
   }
 };
 
 export const getAllWithSearch = async (req, res) => {
   const searchTerm = req.query.searchTerm;
-  console.log(req.query);
   try {
     if (searchTerm) {
       const games = await GameModel.find({
-        title: { $regex: searchTerm, $options: 'i' },
+        title: { $regex: searchTerm, $options: "i" },
       }).exec();
       res.json(games);
     } else {
@@ -28,7 +27,7 @@ export const getAllWithSearch = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось загрузить список игр',
+      message: "Не удалось загрузить список игр",
     });
   }
 };
@@ -41,18 +40,18 @@ export const getOne = async (req, res) => {
         _id: gameId,
       },
       {
-        returnDocument: 'after',
+        returnDocument: "after",
       },
       (err, doc) => {
         if (err) {
           console.log(err);
           res.status(500).json({
-            message: 'Не удалось загрузить игру',
+            message: "Не удалось загрузить игру",
           });
         }
         if (!doc) {
           return res.status(404).json({
-            message: 'Игра не найдена',
+            message: "Игра не найдена",
           });
         }
         res.json(doc);
@@ -61,7 +60,7 @@ export const getOne = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось загрузить игру',
+      message: "Не удалось загрузить игру",
     });
   }
 };
@@ -77,12 +76,12 @@ export const remove = async (req, res) => {
         if (err) {
           console.log(err);
           res.status(500).json({
-            message: 'Не удалось удалить игру',
+            message: "Не удалось удалить игру",
           });
         }
         if (!doc) {
           return res.status(404).json({
-            message: 'Игра не найдена',
+            message: "Игра не найдена",
           });
         }
         res.status({
@@ -93,7 +92,7 @@ export const remove = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось удалить игру',
+      message: "Не удалось удалить игру",
     });
   }
 };
@@ -113,7 +112,7 @@ export const create = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось создать игру',
+      message: "Не удалось создать игру",
     });
   }
 };
@@ -142,7 +141,7 @@ export const update = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось обновить игру',
+      message: "Не удалось обновить игру",
     });
   }
 };
@@ -156,7 +155,58 @@ export const getCategories = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось загрузить категории',
+      message: "Не удалось загрузить категории",
     });
   }
 };
+
+export const addToCart = async (req, res) => {
+  const userId = req.params.uId;
+  const gameId = req.params.gId;
+  try {
+    const user = await UserModer.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+    user.cart.push(gameId);
+    console.log(user.cart);
+    await user.save();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Ошибочка" });
+  }
+};
+
+export const removeFromCart = async (req, res) => {
+  const userId = req.params.uId;
+  const gameId = req.params.gId;
+  try {
+    const user = await UserModer.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+    user.cart = user.cart.filter((c) => c !== gameId);
+    await user.save();
+    console.log(user.cart);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Ошибочка" });
+  }
+};
+
+// export const purchasedGames = async (req, res) => {
+//   const userId = req.params.userId;
+//   const gameId = req.params.gameId;
+//   try {
+//     const user = await UserModer.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "Пользователь не найден" });
+//     }
+//     user.purchasedGames.push(gameId);
+//     user.balance -= game.price;
+//     await user.update();
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };

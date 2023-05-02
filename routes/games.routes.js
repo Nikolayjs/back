@@ -28,4 +28,8 @@ router.patch(
 );
 router.delete("/games/:id", checkAuth, GameController.remove);
 
+router.post("/user/:uId/cart/:gId", GameController.addToCart);
+router.post("/user/:uId/removeFromCart/:gId", GameController.removeFromCart);
+// router.post("user/:id/purchased/:id", GameController.purchasedGames);
+
 export default router;

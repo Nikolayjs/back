@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import UserModel from '../models/User.js';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import UserModel from "../models/User.js";
 
 export const register = async (req, res) => {
   try {
@@ -18,9 +18,9 @@ export const register = async (req, res) => {
       {
         _id: user._id,
       },
-      'privateKey',
+      "privateKey",
       {
-        expiresIn: '30d',
+        expiresIn: "30d",
       }
     );
     const { passwordHash, ...userData } = user._doc;
@@ -31,7 +31,7 @@ export const register = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось зарегистрироваться',
+      message: "Не удалось зарегистрироваться",
     });
   }
 };
@@ -41,16 +41,16 @@ export const login = async (req, res) => {
     const user = await UserModel.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).json({
-        message: 'Неверный логин или пароль',
+        message: "Неверный логин или пароль",
       });
     }
     const token = jwt.sign(
       {
         _id: user._id,
       },
-      'privateKey',
+      "privateKey",
       {
-        expiresIn: '30d',
+        expiresIn: "30d",
       }
     );
     const { passwordHash, ...userData } = user._doc;
@@ -61,7 +61,7 @@ export const login = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось авторизоваться',
+      message: "Не удалось авторизоваться",
     });
   }
 };
@@ -71,7 +71,7 @@ export const getMe = async (req, res) => {
     const user = await UserModel.findById(req.userId);
     if (!user) {
       return res.status(404).json({
-        message: 'Пользователь не найден',
+        message: "Пользователь не найден",
       });
     }
     const { passwordHash, ...userData } = user._doc;
@@ -79,7 +79,26 @@ export const getMe = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось найти пользователя',
+      message: "Не удалось найти пользователя",
+    });
+  }
+};
+
+export const getCart = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "Пользователь не найден",
+      });
+    }
+    const { passwordHash, ...userData } = user._doc;
+    console.log(userData)
+    res.json(userData.cart);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Не удалось найти пользователя",
     });
   }
 };
@@ -89,20 +108,20 @@ export const getAdmin = async (req, res) => {
     const admin = await UserModel.findById(req.userId);
     if (!admin) {
       return res.status(404).json({
-        message: 'Пользователь не найден',
+        message: "Пользователь не найден",
       });
     }
     const { passwordHash, ...adminData } = admin._doc;
     if (!adminData.isAdmin) {
       return res.status(404).json({
-        message: 'Пользователь не найден',
+        message: "Пользователь не найден",
       });
     }
     res.json(adminData);
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось найти пользователя',
+      message: "Не удалось найти пользователя",
     });
   }
 };
@@ -126,7 +145,7 @@ export const update = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: 'Не удалось обновить данные',
+      message: "Не удалось обновить данные",
     });
   }
 };
