@@ -93,7 +93,7 @@ export const getCart = async (req, res) => {
       });
     }
     const { passwordHash, ...userData } = user._doc;
-    console.log(userData)
+    console.log(userData.cart);
     res.json(userData.cart);
   } catch (err) {
     console.log(err);

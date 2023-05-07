@@ -165,11 +165,11 @@ export const addToCart = async (req, res) => {
   const gameId = req.params.gId;
   try {
     const user = await UserModer.findById(userId);
+    const game = await GameModel.findById(gameId);
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
-    user.cart.push(gameId);
-    console.log(user.cart);
+    user.cart.push(game);
     await user.save();
     res.status(200).json(user);
   } catch (err) {
@@ -182,10 +182,11 @@ export const removeFromCart = async (req, res) => {
   const gameId = req.params.gId;
   try {
     const user = await UserModer.findById(userId);
+    const game = await GameModel.findById(gameId);
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
-    user.cart = user.cart.filter((c) => c !== gameId);
+    user.cart = user.cart.filter((c) => c !== game);
     await user.save();
     console.log(user.cart);
     res.status(200).json(user);
